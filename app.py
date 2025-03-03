@@ -1,16 +1,15 @@
 import os
 import gradio as gr
 from crewai import Task, Agent, LLM
-from xhtml2pdf import pisa
 from youtube import pesquisar_videos_youtube
 
-GROQ_API_KEY_01 = os.environ.get("GROQ_API_KEY_01")
+GROQ_API_KEY_01 = os.getenv("GROQ_API_KEY_01")
 groqllm = LLM(
     model="groq/llama-3.3-70b-versatile",
     #model="groq/deepseek-r1-distill-llama-70b",
     api_key=GROQ_API_KEY_01
 )
-GROQ_API_KEY_02 = os.environ.get("GROQ_API_KEY_02")
+GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02")
 groqllm2 = LLM(
     model="groq/llama-3.3-70b-versatile",
     #model="groq/deepseek-r1-distill-llama-70b",

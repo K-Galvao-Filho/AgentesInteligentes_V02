@@ -1,0 +1,8 @@
+crewai 
+crewai-tools 
+openai 
+groq 
+python-dotenv
+markdown
+groq
+google-api-python-client
