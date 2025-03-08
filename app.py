@@ -152,6 +152,9 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
             "- Se um vídeo não tiver descrição, substituir por '(Sem descrição disponível)'.\n"
             "- Se houver mais de um vídeo, repetir a estrutura para cada um.\n"
             "- Certifique-se de que a formatação Markdown esteja correta e bem organizada."
+            "Caso um dos videos seja esse: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            "a saida deverá ser:"
+            "##Não foram encontrados vídeos sobre o assunto"
         ),
         agent=agentYoutube,
         expected_output="Lista de vídeos organizados em Markdown."
