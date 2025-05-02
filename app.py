@@ -27,24 +27,6 @@ groqllm2 = LLM(
     api_key=GROQ_API_KEY_02
 )
 
-# GROQ_API_KEY_01 = os.getenv("GROQ_API_KEY_01")
-# groqllm = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
-
-# GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02")
-# groqllm2 = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
-
-# GROQ_API_KEY_03 = os.getenv("GROQ_API_KEY_03")
-# groqllm3 = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
-
 def processar_topicos(topicos_str):
     """ Converte uma string de tópicos separada por vírgulas em uma lista tratada. """
     return [t.strip() for t in topicos_str.split(',') if t.strip()]
