@@ -1,9 +1,5 @@
-crewai 
-crewai-tools 
-openai 
-groq 
-python-dotenv
-markdown
-groq
-google-api-python-client
-fpdf
+gradio>=4.0.0
+crewai>=0.12.0
+requests>=2.31.0
+google-api-python-client>=2.124.0
+reportlab>=4.0.8
