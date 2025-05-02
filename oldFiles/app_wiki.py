@@ -5,142 +5,47 @@ from youtube import pesquisar_videos_youtube
 from wikipedia import pesquisar_wikipedia
 import time
 import requests
-import io
-import tempfile
-import re
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-
+import io
 
 GROQ_API_KEY_01 = os.getenv("GROQ_API_KEY_01")
 groqllm = LLM(
     model="groq/llama-3.3-70b-versatile",
-    api_key=GROQ_API_KEY_01
+    api_key="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"
 )
+
 GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02")
 groqllm2 = LLM(
     model="groq/llama-3.3-70b-versatile",
-    api_key=GROQ_API_KEY_02
+    api_key="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"
 )
 
-# GROQ_API_KEY_01 = os.getenv("GROQ_API_KEY_01")
-# groqllm = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
-
-# GROQ_API_KEY_02 = os.getenv("GROQ_API_KEY_02")
-# groqllm2 = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
-
-# GROQ_API_KEY_03 = os.getenv("GROQ_API_KEY_03")
-# groqllm3 = LLM(
-#     model="groq/llama-3.3-70b-versatile",
-#     api_key="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"
-# )
+GROQ_API_KEY_03 = os.getenv("GROQ_API_KEY_03")
+groqllm3 = LLM(
+    model="groq/llama-3.3-70b-versatile",
+    api_key="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"
+)
 
 def processar_topicos(topicos_str):
     """ Converte uma string de tópicos separada por vírgulas em uma lista tratada. """
     return [t.strip() for t in topicos_str.split(',') if t.strip()]
-
-def generate_pdf(markdown_content):
-    """Converte conteúdo Markdown para PDF usando reportlab, suportando caracteres UTF-8."""
-    pdf_buffer = io.BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter, rightMargin=inch, leftMargin=inch, topMargin=inch, bottomMargin=inch)
-    
-    styles = getSampleStyleSheet()
-    
-    # Ajustar estilos para suportar UTF-8
-    h1_style = styles['Heading1']
-    h2_style = styles['Heading2']
-    h3_style = styles['Heading3']
-    body_style = styles['BodyText']
-    bullet_style = styles['BodyText']
-    bullet_style.leftIndent = 20
-    
-    # Função para sanitizar texto, preservando acentos e cedilhas
-    def sanitize_text(text):
-        # Substituir links Markdown [texto](url) por texto (url)
-        text = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\1 (\2)', text)
-        # Remover tags HTML
-        text = re.sub(r'<[^>]+>', '', text)
-        # Escapar caracteres que podem parecer tags XML
-        text = text.replace('<', '&lt;').replace('>', '&gt;')
-        # Substituir emojis por texto descritivo
-        emoji_map = {
-            '🎯': '[Alvo] ',
-            '📖': '[Livro] ',
-            '📅': '[Calendário] ',
-            '🎥': '[Vídeo] ',
-            '📜': '[Documento] '
-        }
-        for emoji, replacement in emoji_map.items():
-            text = text.replace(emoji, replacement)
-        return text
-    
-    story = []
-    lines = markdown_content.split('\n')
-    for line in lines:
-        line = line.strip()
-        if not line:
-            story.append(Spacer(1, 0.2 * inch))
-            continue
-        
-        if line.startswith('# '):
-            text = sanitize_text(line[2:])
-            story.append(Paragraph(text, h1_style))
-        elif line.startswith('## '):
-            text = sanitize_text(line[3:])
-            story.append(Paragraph(text, h2_style))
-        elif line.startswith('### '):
-            text = sanitize_text(line[4:])
-            story.append(Paragraph(text, h3_style))
-        elif line.startswith('- '):
-            text = sanitize_text(line[2:])
-            story.append(Paragraph(f"• {text}", bullet_style))
-        elif line.startswith('---'):
-            story.append(Spacer(1, 0.3 * inch))
-        else:
-            text = sanitize_text(line)
-            story.append(Paragraph(text, body_style))
-    
-    doc.build(story)
-    pdf_buffer.seek(0)
-    
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
-        temp_pdf.write(pdf_buffer.read())
-        temp_pdf_path = temp_pdf.name
-    
-    return temp_pdf_path
-
-def generate_markdown_file(markdown_content):
-    """Gera um arquivo Markdown a partir do conteúdo."""
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.md', mode='w', encoding='utf-8') as temp_md:
-        temp_md.write(markdown_content)
-        temp_md_path = temp_md.name
-    
-    return temp_md_path
 
 def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     topicos = processar_topicos(topicos_str)
     solicitacao = f"Disciplina: {disciplina}\nAssunto: {assunto}\nTópicos: {topicos}\n"
 
     # Busca no YouTube
-    yield "Buscando vídeos no YouTube...", gr.update(value=10), None, None
+    yield "Buscando vídeos no YouTube...", gr.update(value=10)
     entradaYoutube = pesquisar_videos_youtube(solicitacao)
 
     # Busca na Wikipedia
-    yield "Buscando artigos na Wikipedia...", gr.update(value=20), None, None
+    yield "Buscando artigos na Wikipedia...", gr.update(value=20)
     entradaWikipedia = pesquisar_wikipedia(topicos)
 
     # Motivação
-    yield "Criando mensagem motivacional...", gr.update(value=30), None, None
+    yield "Criando mensagem motivacional...", gr.update(value=30)
     agentMotivador = Agent(
         role='Motivador',
         goal='Escrever uma mensagem motivacional para o estudante.',
@@ -151,7 +56,6 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     taskMotivador = Task(
         description=(
             "Escreva uma mensagem motivacional para o estudante, formatada em Markdown.\n\n"
-            "A mensagem deve conter:\n"
             "## Mensagem Motivacional 🎯\n\n"
             "- Um parágrafo inicial incentivando o estudante a seguir seus estudos.\n"
             "- Frases inspiradoras para manter o foco e a disciplina.\n"
@@ -164,7 +68,7 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     saidaMotivador = agentMotivador.execute_task(taskMotivador)
 
     # Guia de Estudos
-    yield "Gerando guia de estudos...", gr.update(value=50), None, None
+    yield "Gerando guia de estudos...", gr.update(value=50)
     agentGuia = Agent(
         role="Especialista em Guia de Estudos",
         goal="Criar um guia de estudos estruturado, explicativo e didático sobre um determinado assunto.",
@@ -199,7 +103,7 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     saidaGuia = agentGuia.execute_task(taskGuia)
 
     # Plano de Estudos
-    yield "Criando plano de estudos...", gr.update(value=70), None, None
+    yield "Criando plano de estudos...", gr.update(value=70)
     agentPlano = Agent(
         role="Especialista em Plano de Estudos",
         goal="Criar um plano de estudos eficiente para que o aluno aprenda de maneira organizada.",
@@ -243,7 +147,7 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     saidaPlano = agentPlano.execute_task(taskPlano)
 
     # Curadoria de Vídeos
-    yield "Organizando vídeos do YouTube...", gr.update(value=90), None, None
+    yield "Organizando vídeos do YouTube...", gr.update(value=90)
     agentYoutube = Agent(
         role='Especialista em Curadoria de Vídeos Educacionais',
         goal='Organizar e formatar vídeos educacionais encontrados no YouTube para aprendizado eficiente.',
@@ -273,7 +177,7 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
     saidaYoutube = agentYoutube.execute_task(taskYoutube)
 
     # Curadoria de Artigos da Wikipedia
-    yield "Organizando artigos da Wikipedia...", gr.update(value=95), None, None
+    yield "Organizando artigos da Wikipedia...", gr.update(value=95)
     agentWikipedia = Agent(
         role='Especialista em Curadoria de Artigos Educacionais',
         goal='Organizar e formatar artigos educacionais encontrados na Wikipedia para aprendizado eficiente.',
@@ -288,21 +192,22 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
             "em Markdown, formatando-os de forma clara e educacional.\n\n"
             f"## Artigos sobre {assunto}\n\n"
             "### Formato de saída\n"
-            "- For each article, the output should follow the format below:\n"
+            "- Para cada artigo, a saída deve seguir o formato abaixo:\n"
             "  **[Título](URL)**\n\n  _Trecho_\n\n"
             "- Se um artigo não tiver trecho, substituir por '(Sem trecho disponível)'.\n"
             "- Se houver mais de um artigo, repetir a estrutura para cada um.\n"
-            "- Certifique-se de que a formatação Markdown esteja correta e bem organizada."
+            "- Certifique-se de que a formatação Markdown esteja correta e bem organizada."            
             "Caso não tenha encontrado artigos relevantes, a saída deverá ser:\n\n"
             "## Não foram encontrados artigos sobre o assunto\n\n"
             "Não busque que não tenham sido enviado na lista de artigos."
+
         ),
         agent=agentWikipedia,
         expected_output="Lista de artigos organizados em Markdown."
     )
     saidaWikipedia = agentWikipedia.execute_task(taskWikipedia)
 
-    yield "Processo concluído!", gr.update(value=100), None, None
+    yield "Processo concluído!", gr.update(value=100)
 
     saidaCompleta = f"""
 # 🎯 Motivação
@@ -321,11 +226,7 @@ def executar_equipe_interface(disciplina, assunto, topicos_str, horas, dias):
 {saidaWikipedia}
 """
 
-    # Gerar arquivos para download
-    pdf_file = generate_pdf(saidaCompleta)
-    markdown_file = generate_markdown_file(saidaCompleta)
-
-    yield saidaCompleta, gr.update(value=100), pdf_file, markdown_file
+    yield saidaCompleta, gr.update(value=100)
 
 # Interface Gradio
 with gr.Blocks() as demo:
@@ -341,24 +242,9 @@ with gr.Blocks() as demo:
             progress = gr.Slider(minimum=0, maximum=100, step=1, value=0, label="Progresso", interactive=False)
         with gr.Column():
             resultado = gr.Markdown(label="Material Completo (Markdown)")
-            with gr.Row():
-                download_pdf = gr.File(label="Baixar PDF", visible=False)
-                download_markdown = gr.File(label="Baixar Markdown", visible=False)
 
-    def update_download_buttons(pdf_file, markdown_file):
-        return (
-            gr.update(value=pdf_file, visible=True, label="Baixar PDF", file_types=[".pdf"]),
-            gr.update(value=markdown_file, visible=True, label="Baixar Markdown", file_types=[".md"])
-        )
-
-    gerar_button.click(
-        fn=executar_equipe_interface,
-        inputs=[disciplina, assunto, topicos_str, horas, dias],
-        outputs=[resultado, progress, download_pdf, download_markdown]
-    ).then(
-        fn=update_download_buttons,
-        inputs=[download_pdf, download_markdown],
-        outputs=[download_pdf, download_markdown]
-    )
+    gerar_button.click(fn=executar_equipe_interface,
+                       inputs=[disciplina, assunto, topicos_str, horas, dias],
+                       outputs=[resultado, progress])
 
 demo.launch()

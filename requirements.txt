@@ -7,3 +7,9 @@ markdown
 groq
 google-api-python-client
 fpdf
+gradio
+requests
+reportlab
+markdown2
+weasyprint
+pdfkit
