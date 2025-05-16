@@ -1,4 +1,5 @@
-# Agentes Inteligentes – Plataforma CREWAI
+# EDUC.AI
+##Sistema educacional com recomendação de conteudo
 
 Este repositório contém uma aplicação baseada em agentes inteligentes utilizando a plataforma CREWAI. O projeto desenvolve cinco agentes que auxiliam alunos no processo de aprendizado, fornecendo planos de estudo personalizados, guias de estudo detalhados, curadoria de conteúdos relevantes, mensagens motivacionais e integração com APIs externas para enriquecimento educacional.
 
